@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: changsuoyuyan-api
+    runtime: node
+    region: singapore
+    plan: free
+    # monorepo：在根目录安装，进 content 服务启动
+    buildCommand: npm install -g pnpm@10 && pnpm install --frozen-lockfile=false
+    startCommand: cd services/content && pnpm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DATABASE_URL
+        sync: false        # 在 Render 后台手动填 Neon 连接串
+      - key: JWT_SECRET
+        generateValue: true # Render 自动生成强密钥
+      - key: GROQ_API_KEY
+        sync: false        # 后台手动填
+      - key: CORS_ORIGINS
+        sync: false        # 部署前端后填 Vercel 域名

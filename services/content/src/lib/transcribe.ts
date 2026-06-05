@@ -7,7 +7,16 @@ import os from "os"
 import path from "path"
 
 const execAsync = promisify(exec)
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
+
+// 懒加载 Groq：没配 key 时不报错，调用转录时才提示
+let _groq: Groq | null = null
+function getGroq(): Groq {
+  if (!process.env.GROQ_API_KEY) {
+    throw new Error("字幕功能未配置（缺少 GROQ_API_KEY）")
+  }
+  if (!_groq) _groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
+  return _groq
+}
 
 // VTT 时间格式
 function toVTTTime(seconds: number): string {
@@ -77,7 +86,7 @@ export async function transcribeFromUrl(
       // 3a. 小文件直接转录
       onProgress?.("transcribing")
       const file       = await toFile(fs.createReadStream(compPath), "audio.mp3", { type: "audio/mpeg" })
-      const transcript = await groq.audio.transcriptions.create({
+      const transcript = await getGroq().audio.transcriptions.create({
         file,
         model:           "whisper-large-v3",
         response_format: "verbose_json",
@@ -103,7 +112,7 @@ export async function transcribeFromUrl(
       for (let i = 0; i < chunks.length; i++) {
         onProgress?.(`transcribing chunk ${i + 1}/${chunks.length}`)
         const chunkFile  = await toFile(fs.createReadStream(chunks[i]), "chunk.mp3", { type: "audio/mpeg" })
-        const transcript = await groq.audio.transcriptions.create({
+        const transcript = await getGroq().audio.transcriptions.create({
           file:            chunkFile,
           model:           "whisper-large-v3",
           response_format: "verbose_json",
