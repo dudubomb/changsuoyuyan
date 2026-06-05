@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
-// 后端地址（服务端代理用，默认本机）
-const API_BACKEND = process.env.API_BACKEND ?? "http://localhost:3001";
+// 后端地址（服务端代理用）。生产用 Render，本地 dev 用 localhost。
+const API_BACKEND = process.env.API_BACKEND
+  ?? (process.env.NODE_ENV === "production"
+      ? "https://changsuoyuyan.onrender.com"
+      : "http://localhost:3001");
 
 const nextConfig: NextConfig = {
   // 构建时不因 lint/类型错误中断（生产部署）
