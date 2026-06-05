@@ -4,9 +4,9 @@ services:
     runtime: node
     region: singapore
     plan: free
-    # monorepo：用 corepack 启用 pnpm（无需全局安装，避免只读文件系统报错）
-    buildCommand: corepack enable && corepack prepare pnpm@10.34.1 --activate && pnpm install --no-frozen-lockfile
-    startCommand: corepack pnpm --filter @rugby/content-service start
+    # Render 自带 pnpm（检测到 pnpm-lock.yaml 自动启用），无需手动安装
+    buildCommand: pnpm install --no-frozen-lockfile
+    startCommand: pnpm --filter @rugby/content-service start
     envVars:
       - key: NODE_ENV
         value: production
