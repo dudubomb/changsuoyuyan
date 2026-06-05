@@ -1,0 +1,19 @@
+# 依赖
+node_modules
+.pnpm-store
+
+# 环境变量（含密钥，绝不提交）
+.env
+.env.local
+.env.*.local
+
+# 构建产物
+dist
+.next
+.turbo
+out
+*.tsbuildinfo
+
+# 系统文件
+.DS_Store
+*.log
